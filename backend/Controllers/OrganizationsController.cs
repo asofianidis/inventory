@@ -1,5 +1,6 @@
 ﻿using backend.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Validations;
 using Npgsql;
 
 namespace backend.Controllers
@@ -72,6 +73,30 @@ namespace backend.Controllers
                 await conn.CloseAsync();
                 NpgsqlConnection.ClearAllPools();
                 return Ok(result > 0);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.Message);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrganization([FromBody] UpdateOrganizationDTO body)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new(_connectionString);
+                await conn.OpenAsync();
+
+                await using NpgsqlCommand cmd = new(@"UPDATE organizations SET name=@Org_Name WHERE org_id=@Org_id RETURNING org_id", conn);
+                cmd.Parameters.AddWithValue("@Org_Name", body.Org_name);
+                cmd.Parameters.AddWithValue("@Org_id", body.Org_id);
+                var result = await cmd.ExecuteScalarAsync();
+
+                await conn.CloseAsync();
+                NpgsqlConnection.ClearAllPools();
+
+                return Ok(result);
             }
             catch (Exception e) {
                 Console.WriteLine(e.Message);
