@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend.DTO;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 namespace backend.Controllers
@@ -27,6 +28,50 @@ namespace backend.Controllers
                 await conn.CloseAsync();
                 NpgsqlConnection.ClearAllPools();
                 return Ok(result);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.Message);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrganization([FromBody] CreateOrganizationDTO body)
+        {
+            try
+            {
+                await using NpgsqlConnection conn = new(_connectionString);
+                await conn.OpenAsync();
+
+                await using NpgsqlCommand cmd = new(@"INSERT INTO organizations (name) VALUES (@Org_Name) RETURNING org_id", conn);
+                cmd.Parameters.AddWithValue("@Org_Name", body.OrganizationName);
+                var result = await cmd.ExecuteScalarAsync();
+
+                await conn.CloseAsync();
+                NpgsqlConnection.ClearAllPools();
+
+                return Ok(result);
+            }
+            catch (Exception e) {
+                Console.WriteLine(e.Message);
+                return StatusCode(500);
+            }
+        }
+
+        [HttpDelete("{org_id}")]
+        public async Task<IActionResult> DeleteOrg(int org_id) {
+            try
+            {
+                await using NpgsqlConnection conn = new(_connectionString);
+                await conn.OpenAsync();
+
+                await using NpgsqlCommand cmd = new(@"DELETE FROM organizations WHERE org_id=@Org_id", conn);
+                cmd.Parameters.AddWithValue("@Org_id", org_id);
+                var result = await cmd.ExecuteNonQueryAsync();
+
+                await conn.CloseAsync();
+                NpgsqlConnection.ClearAllPools();
+                return Ok(result > 0);
             }
             catch (Exception e) {
                 Console.WriteLine(e.Message);
