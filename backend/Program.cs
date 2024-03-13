@@ -30,7 +30,7 @@ namespace backend
 
             app.MapControllers();
 
-            app.MapGet("/", context => context.Response.WriteAsync("Hello World!"));
+            app.MapGet("/", context => context.Response.WriteAsync("Hello World"));
 
             app.Run();
         }
