@@ -27,6 +27,7 @@ namespace backend
 
             app.UseAuthorization();
 
+            app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
 
             app.MapControllers();
 
