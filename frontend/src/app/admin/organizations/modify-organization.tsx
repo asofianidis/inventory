@@ -61,6 +61,68 @@ export default function ModifyOrganization({ organization }: props) {
       toast({ description: e.message, variant: "destructive" });
     }
   };
+
+  const handleCreate = async () => {
+    try {
+      const body: OrganizationBody = {
+        organizationName: name,
+      };
+
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Organizations/CreateOrganization`,
+        {
+          method: "POST",
+          body: JSON.stringify(body),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `Failed to post organization data, status code ${res.status}`
+        );
+      }
+
+      const data = await res.json();
+
+      if (!isNaN(data)) {
+        toast({ description: "Created Organization" });
+        router.refresh();
+        setName("");
+        setIsOpen(false);
+      }
+    } catch (e: any) {
+      console.log(e);
+      toast({ description: e.message, variant: "destructive" });
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/Organizations/DeleteOrg/${organization?.org_id}`,
+        { method: "DELETE" }
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `Failed to delete organization, status code ${res.status}`
+        );
+      }
+
+      const data = await res.json();
+
+      if (data) {
+        toast({ description: "Delete Organization" });
+        router.refresh();
+        setIsOpen(false);
+      }
+    } catch (e: any) {
+      console.log(e);
+      toast({ description: e.message, variant: "destructive" });
+    }
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -87,10 +149,16 @@ export default function ModifyOrganization({ organization }: props) {
           </div>
 
           <div className="flex gap-2 items-center justify-end">
-            <Button onClick={handleUpdate}>Save</Button>
+            <Button
+              onClick={organization != undefined ? handleUpdate : handleCreate}
+            >
+              Save
+            </Button>
             {organization != undefined ? (
               <>
-                <Button variant={"destructive"}>Delete</Button>
+                <Button variant={"destructive"} onClick={handleDelete}>
+                  Delete
+                </Button>
               </>
             ) : null}
           </div>
