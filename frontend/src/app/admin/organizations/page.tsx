@@ -53,7 +53,7 @@ export default async function OrganizationPage() {
         <TableBody>
           {organizations.map((o) => {
             return (
-              <TableRow>
+              <TableRow key={o.org_id.toString()}>
                 <TableCell>{o.org_id}</TableCell>
                 <TableCell>{o.name}</TableCell>
                 <TableCell>
