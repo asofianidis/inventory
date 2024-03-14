@@ -113,7 +113,7 @@ export default function ModifyOrganization({ organization }: props) {
       const data = await res.json();
 
       if (data) {
-        toast({ description: "Delete Organization" });
+        toast({ description: "Deleted Organization" });
         router.refresh();
         setIsOpen(false);
       }
