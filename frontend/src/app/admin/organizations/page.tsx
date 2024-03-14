@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Organizations } from "@/types/organizations";
+import ModifyOrganization from "./modify-organization";
 
 async function GetOrganizations(): Promise<Organizations[]> {
   try {
@@ -37,6 +38,9 @@ export default async function OrganizationPage() {
   return (
     <div className="mt-8 mx-6 mb-6 flex flex-col gap-5">
       <h2 className="text-2xl font-bold">Organizations</h2>
+      <div className="flex justify-end">
+        <ModifyOrganization />
+      </div>
       <hr />
       <Table>
         <TableHeader>
@@ -52,7 +56,12 @@ export default async function OrganizationPage() {
               <TableRow>
                 <TableCell>{o.org_id}</TableCell>
                 <TableCell>{o.name}</TableCell>
-                <TableCell></TableCell>
+                <TableCell>
+                  <ModifyOrganization
+                    organization={o}
+                    key={o.org_id.toString()}
+                  />
+                </TableCell>
               </TableRow>
             );
           })}
