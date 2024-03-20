@@ -19,7 +19,8 @@ namespace backend.Controllers
         [HttpPost]
         public async Task<IActionResult> UserRegistration(UserRegistrationDTO user)
         {
-            try {
+            try
+            {
                 await using NpgsqlConnection conn = new(_connectionString);
                 await conn.OpenAsync();
 
@@ -28,7 +29,8 @@ namespace backend.Controllers
                 var orgResult = await orgCmd.ExecuteScalarAsync();
 
 
-                if (orgResult == null) {
+                if (orgResult == null)
+                {
                     throw new Exception("Failed to find Org");
                 }
 
@@ -46,7 +48,8 @@ namespace backend.Controllers
                 insertUserCmd.Parameters.AddWithValue("@Pw", pw);
                 var result = await insertUserCmd.ExecuteScalarAsync();
 
-                if (result == null) {
+                if (result == null)
+                {
                     throw new Exception("Failed to create User");
                 }
 
@@ -56,12 +59,14 @@ namespace backend.Controllers
                 var tokenResult = await tokenCmd.ExecuteScalarAsync();
 
                 return Ok(tokenResult);
-            }catch(Exception e){
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine(e.Message);
                 return StatusCode(500);
             }
         }
 
-        
+
     }
 }
