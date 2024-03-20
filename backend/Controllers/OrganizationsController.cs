@@ -44,7 +44,7 @@ namespace backend.Controllers
                 await using NpgsqlConnection conn = new(_connectionString);
                 await conn.OpenAsync();
 
-                await using NpgsqlCommand cmd = new(@"INSERT INTO organizations (name) VALUES (@Org_Name) RETURNING org_id", conn);
+                await using NpgsqlCommand cmd = new(@"INSERT INTO organizations (name, org_code) VALUES (@Org_Name, SELECT LPAD(FLOOR(RANDOM() * 1000000)::TEXT, 6, '0')) RETURNING org_id", conn);
                 cmd.Parameters.AddWithValue("@Org_Name", body.OrganizationName);
                 var result = await cmd.ExecuteScalarAsync();
 
